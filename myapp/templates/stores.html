@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block title %} Stores {% endblock %}
+{% block content %}
+{% load static %}
+<div class="container mx-auto my-12">
+    <h1 class="text-4xl font-bold mb-8">Product Stores</h1>
+    
+    {% if query %}
+    <div class="mb-6">
+        <p class="text-gray-600">
+            Search results for: <span class="font-bold">{{ query }}</span>
+        </p>
+    </div>
+    {% endif %}
+
+    <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+        {% for store in stores %}
+        <div class="bg-white rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+            <div class="relative">
+                <div class="w-full h-64 bg-gradient-to-r from-pink-300 to-purple-300 rounded-t-lg flex items-center justify-center">
+                    <span class="text-white text-2xl font-bold opacity-75">
+                        {{ store.store|slice:":4"|upper }}
+                    </span>
+                </div>
+                <div class="absolute top-4 right-4 bg-pink-500 text-white px-3 py-1 rounded-full">
+                    {{ store.num_products }} Products
+                </div>
+            </div>
+            <div class="p-4">
+                <h3 class="text-lg font-bold mb-2">{{ store.store }}</h3>
+                <div class="flex justify-between items-center">
+                    <span class="text-gradient-to-r from-pink-500 to-purple-500 font-bold">
+                        {{ store.num_products }} Products
+                    </span>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+
+    {% if not stores %}
+    <div class="text-center py-12">
+        <p class="text-gray-600 text-xl">
+            {% if query %}
+            No stores found matching "{{ query }}".
+            {% else %}
+            No stores available.
+            {% endif %}
+        </p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

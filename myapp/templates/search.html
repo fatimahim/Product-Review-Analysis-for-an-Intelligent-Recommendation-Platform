@@ -1,0 +1,133 @@
+{% extends "base.html" %}
+
+{% block title %} Product Search {% endblock %}
+
+{% block content %}
+{% load static %}
+<div class="container mx-auto my-12 px-4">
+    <h1 class="text-4xl font-bold mb-8 text-center">Product Search Results</h1>
+    
+    <div class="mb-8">
+        <form method="GET" action="{% url 'product_search' %}" class="max-w-lg mx-auto">
+            <div class="flex">
+                <input type="text" 
+                       name="q" 
+                       value="{{ query }}" 
+                       class="flex-1 p-3 border rounded-l-lg focus:outline-none focus:ring-2 focus:ring-pink-500"
+                       placeholder="Search for products...">
+                <button type="submit" 
+                        class="bg-pink-500 text-white px-6 py-3 rounded-r-lg hover:bg-pink-600 transition duration-300 ease-in-out">
+                    Search
+                </button>
+            </div>
+        </form>
+    </div>
+
+    {% if products %}
+        <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+            {% for product in products %}
+            <div class="bg-white rounded-lg shadow-lg overflow-hidden transform transition duration-300 hover:scale-105 hover:shadow-xl">
+                <div class="relative">
+                    {% if product.product_image %}
+                        {% if product.product_image.hi_res %}
+                        <img src="{{ product.product_image.hi_res.0 }}" 
+                             alt="{{ product.product_title }}" 
+                             class="w-full h-64 object-cover">
+                        {% elif product.product_image.large %}
+                        <img src="{{ product.product_image.large.0 }}" 
+                             alt="{{ product.product_title }}" 
+                             class="w-full h-64 object-cover">
+                        {% elif product.product_image.thumb %}
+                        <img src="{{ product.product_image.thumb.0 }}" 
+                             alt="{{ product.product_title }}" 
+                             class="w-full h-64 object-cover">
+                        {% else %}
+                        <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                            <img src="{% static 'images.png'' %}" alt="Default Product Image" class="max-w-full max-h-full object-contain">
+                        </div>
+                        {% endif %}
+                    {% else %}
+                        <div class="w-full h-64 bg-gray-200 flex items-center justify-center">
+                            <img src="{% static 'images.png'' %}" alt="Default Product Image" class="max-w-full max-h-full object-contain">
+                        </div>
+                    {% endif %}
+                    
+                    <div class="absolute top-4 right-4">
+                        <span class="bg-pink-500 text-white px-3 py-1 rounded-full text-sm">
+                            {{ product.average_rating|floatformat:1 }} ★
+                        </span>
+                    </div>
+                </div>
+                
+                <div class="p-4 flex flex-col h-full">
+                    <h3 class="text-lg font-bold mb-2 line-clamp-2">{{ product.product_title }}</h3>
+                    
+                    <div class="flex items-center mb-2 text-gray-600">
+                        <span class="mr-2">
+                            {{ product.reviews_count }} reviews
+                        </span>
+                    </div>
+                    
+                    
+                    <div class="flex items-center mb-2 text-gray-600">
+                        {% if product.average_rating %}
+                        <span class="mr-2">
+                            ★ {{ product.average_rating|floatformat:1 }}
+                        </span>
+                        {% else %}
+                        <span class="text-gray-400">No ratings</span>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="mt-4">
+                        <a href="{% url 'product_details' product.product_id %}" 
+                           class="w-full bg-pink-500 text-white py-2 rounded hover:bg-pink-600 transition duration-300 text-center block">
+                          View Details
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        {% if products.has_other_pages %}
+        <div class="flex justify-center mt-8">
+            <nav aria-label="Pagination" class="inline-flex rounded-md shadow-sm">
+                {% if products.has_previous %}
+                <a href="?q={{ query }}&page={{ products.previous_page_number }}" 
+                   class="px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    Previous
+                </a>
+                {% endif %}
+
+                {% for page_num in products.paginator.page_range %}
+                    {% if page_num == products.number %}
+                    <span class="px-4 py-2 border border-pink-500 bg-pink-500 text-white">
+                        {{ page_num }}
+                    </span>
+                    {% else %}
+                    <a href="?q={{ query }}&page={{ page_num }}" 
+                       class="px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                        {{ page_num }}
+                    </a>
+                    {% endif %}
+                {% endfor %}
+
+                {% if products.has_next %}
+                <a href="?q={{ query }}&page={{ products.next_page_number }}" 
+                   class="px-4 py-2 border border-gray-300 text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                    Next
+                </a>
+                {% endif %}
+            </nav>
+        </div>
+        {% endif %}
+
+    {% elif query %}
+        <div class="text-center text-gray-600 py-12">
+            <p class="text-2xl mb-4">No products found matching "{{ query }}"</p>
+            <p class="text-gray-500">Try different keywords or broaden your search</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

@@ -1,0 +1,164 @@
+{% extends "base.html" %}
+{% block title %} Home page {% endblock %}
+{% block content %}
+{% load static %}
+<style>
+.hero-section {
+  position: relative;
+  height: 500px;
+  overflow: hidden;
+}
+
+.hero-section .background-image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-size: cover;
+  background-position: center;
+  opacity: 0;
+  animation: background-change 10s linear infinite;
+}
+
+@keyframes background-change {
+  0% {
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.hero-section .content {
+  position: relative;
+  z-index: 1;
+  color: white;
+  text-align: center;
+  padding-top: 150px;
+}
+
+.product-carousel {
+  display: flex;
+  overflow-x: hidden;  /* Change to hidden to prevent horizontal scrolling */
+  padding-bottom: 1rem;
+}
+
+.product-item {
+  flex: 0 0 auto;
+  width: 300px;
+  margin-right: 1rem;
+  scroll-snap-align: start;
+  transition: transform 0.5s ease-in-out; /* Smooth transition between slides */
+}
+
+.product-item:last-child {
+  margin-right: 0;
+}
+
+.product-item img {
+  height: 250px;
+  object-fit: cover;
+}
+
+.no-products {
+  text-align: center;
+  padding: 2rem;
+  background-color: #f8f9fa;
+}
+
+@keyframes carousel-slide {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+</style>
+<div class="font-sans">
+    <div class="hero-section" style="background-image: url('{% static background_image %}'); background-size: cover; background-position: center;">
+        <div class="content">
+            <h1>Discover Quality Products</h1>
+            <p>Don't settle for less! Check product ratings before you buy.</p>
+            <br>
+            <br>
+            <a href="{% url 'products' %}" class="bg-pink-500 hover:bg-pink-600 text-white py-3 px-6 rounded-lg">
+                View Products
+            </a>
+        </div>
+    </div>
+
+    <main>
+        <section id="product-section" class="bg-gradient-to-r from-pink-100 to-purple-100 py-12">
+            <div class="container mx-auto">
+                <h2 class="text-3xl font-bold mb-6">Excellent Products</h2>
+
+                {% if excellent_products %}
+                    <div class="product-carousel">
+                        {% for product in excellent_products %}
+                            <div class="product-item">
+                                <div class="bg-white rounded-lg shadow-md">
+                                    <img src="{{ product.main_image }}" alt="{{ product.product_title }}" class="w-full rounded-t-lg">
+                                    <div class="p-4">
+                                        <h3 class="text-lg font-bold mb-2">{{ product.product_title }}</h3>
+                                        <p class="text-gray-600 mb-2">{{ product.rating_status }} ({{ product.product_average_rating|floatformat:1 }})</p>
+                                        {% if product.price and product.price != "NaN" and product.price != "None" %}
+                                        <div class="mt-auto">
+                                          <span class="text-xl font-bold text-pink-600">${{ product.price }}</span>
+                                        </div>
+                                      {% else %}
+                                        <div class="mt-auto">
+                                          <span class="text-xl font-bold text-gray-500">N/A</span>
+                                        </div>
+                                      {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="no-products">
+                        <p class="text-xl text-gray-600">No excellent products found at the moment.</p>
+                    </div>
+                {% endif %}
+            </div>
+        </section>
+    </main>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var carousel = document.querySelector('.product-carousel');
+            
+            // Only set up carousel if products exist
+            if (carousel && carousel.children.length > 0) {
+                var items = carousel.querySelectorAll('.product-item');
+                
+                // Ensure the number of items is greater than 1 for carousel sliding to make sense
+                if (items.length > 1) {
+                    var interval = setInterval(function() {
+                        var firstItem = items[0];
+                        // Slide the items
+                        carousel.style.transition = 'transform 15s linear';
+                        carousel.style.transform = 'translateX(-100%)';
+
+                        // After the animation, move the first item to the end without transition
+                        setTimeout(function() {
+                            carousel.style.transition = 'none';
+                            carousel.appendChild(firstItem);
+                            carousel.style.transform = 'translateX(0)';
+                        }, 15000);
+                    }, 15000);
+                }
+            }
+        });
+    </script>
+</div>
+{% endblock %}
