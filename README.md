@@ -47,7 +47,7 @@ Users can:
 
 1. **Clone the repository**:
    ```bash
-   git clone https://github.com/yourusername/product-review-analysis.git
+   git clone https://github.com/fatimahim/Product-Review-Analysis-for-an-Intelligent-Recommendation-Platform
    cd product-review-analysis
    ```
 
