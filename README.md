@@ -45,24 +45,20 @@ Users can:
 
 ## 🖥️ How to Run
 
-1. **Clone the repository**:
-   ```bash
-   git clone https://github.com/fatimahim/Product-Review-Analysis-for-an-Intelligent-Recommendation-Platform
-   cd product-review-analysis
-   ```
 
 
-3. **Set Up MongoDB**:
+
+. **Set Up MongoDB**:
    ```bash
    sudo service mongod start
    ```
 
-4. **Run Django Migrations**:
+. **Run Django Migrations**:
    ```bash
    python manage.py migrate
    ```
 
-5. **Start the Server**:
+. **Start the Server**:
    ```bash
    python manage.py runserver
    ```
